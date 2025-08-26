@@ -1,0 +1,72 @@
+{
+  "name": "dbx-mlops-taxi (Project 1)",
+  "tasks": [
+    {
+      "task_key": "bronze",
+      "notebook_task": {
+        "notebook_path": "<WORKSPACE_REPO_PATH>/notebooks/01_ingest_bronze.py"
+      }
+    },
+    {
+      "task_key": "silver",
+      "depends_on": [
+        {
+          "task_key": "bronze"
+        }
+      ],
+      "notebook_task": {
+        "notebook_path": "<WORKSPACE_REPO_PATH>/notebooks/02_silver_clean.py"
+      }
+    },
+    {
+      "task_key": "gold",
+      "depends_on": [
+        {
+          "task_key": "silver"
+        }
+      ],
+      "notebook_task": {
+        "notebook_path": "<WORKSPACE_REPO_PATH>/notebooks/03_gold_features.py"
+      }
+    },
+    {
+      "task_key": "train",
+      "depends_on": [
+        {
+          "task_key": "gold"
+        }
+      ],
+      "notebook_task": {
+        "notebook_path": "<WORKSPACE_REPO_PATH>/notebooks/10_train.py"
+      }
+    },
+    {
+      "task_key": "score",
+      "depends_on": [
+        {
+          "task_key": "gold"
+        }
+      ],
+      "notebook_task": {
+        "notebook_path": "<WORKSPACE_REPO_PATH>/notebooks/20_batch_score.py"
+      }
+    }
+  ],
+  "job_clusters": [
+    {
+      "job_cluster_key": "small",
+      "new_cluster": {
+        "spark_version": "14.3.x-scala2.12",
+        "num_workers": 1,
+        "spark_conf": {
+          "spark.databricks.cluster.profile": "singleNode"
+        },
+        "custom_tags": {
+          "ResourceClass": "SingleNode"
+        },
+        "node_type_id": "auto"
+      }
+    }
+  ],
+  "schedule": null
+}
