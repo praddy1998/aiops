@@ -29,28 +29,3 @@ df = spark.read.format('delta').load(SRC).limit(50_000)
 
 print("Wrote:", f"{DB}.bronze_trips")
 
-
-# COMMAND ----------
-
-# 02_silver_clean.py
-from pyspark.sql.functions import col
-
-DB = "taxi_mini"
-df = spark.table(f"{DB}.bronze_trips")
-
-clean = (
-  df
-  .filter((col("trip_distance") > 0) & (col("fare_amount") > 0))
-  .filter(col("label").between(0, 500))
-  .dropna(subset=[
-      "pickup_longitude","pickup_latitude",
-      "dropoff_longitude","dropoff_latitude",
-      "pickup_datetime"  # this dataset uses pickup_datetime
-  ])
-)
-
-(clean.write.mode("overwrite").format("delta")
-      .saveAsTable(f"{DB}.silver_trips"))
-
-print("Wrote:", f"{DB}.silver_trips")
-
